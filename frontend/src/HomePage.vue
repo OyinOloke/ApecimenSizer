@@ -1,24 +1,21 @@
 <template>
-  <div class="home">
-    <h1>Calculate Specimen Real Size</h1>
-    <form @submit.prevent="calculateSpecimen">
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" v-model="username" required />
+  <div class="app">
+    <div class="container">
+      <div class="header">
+        <h1>Specimen Size Calculator</h1>
       </div>
-      <div>
-        <label for="specimenSize">Specimen Size:</label>
-        <input type="number" v-model="specimenSize" required />
+
+      <div class="input-section">
+        <input v-model="specimenSize" type="number" placeholder="Enter Specimen Size" class="input-box" />
+        <input v-model="magnification" type="number" placeholder="Enter Magnification" class="input-box" />
+        <button @click="calculate" class="button">Calculate</button>
       </div>
-      <div>
-        <label for="magnification">Magnification:</label>
-        <input type="number" v-model="magnification" required />
+
+      <div v-if="actualSize !== null" class="results">
+        <p>Actual size: {{ actualSize }}</p>
       </div>
-      <button type="submit">Calculate</button>
-    </form>
-    <div v-if="calculatedSize">
-      <p><strong>Calculated Real Size: </strong>{{ calculatedSize }}</p>
     </div>
+    <div class="watermark">Oyins Magnification Calculation</div>
   </div>
 </template>
 
@@ -26,39 +23,118 @@
 export default {
   data() {
     return {
-      username: '',
       specimenSize: null,
       magnification: null,
-      calculatedSize: null
+      actualSize: null,
     };
   },
   methods: {
-    async calculateSpecimen() {
-      const response = await fetch('http://localhost:8000/calculate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: this.username,
-          specimen_size: this.specimenSize,
-          magnification: this.magnification
-        }),
-      });
-      const data = await response.json();
-      this.calculatedSize = data.actual_size;
-    }
-  }
+    calculate() {
+      this.actualSize = this.specimenSize / this.magnification;
+    },
+  },
 };
 </script>
 
-<style scoped>
-.home {
-  text-align: center;
-  padding: 20px;
+<style>
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #ffffff, #ffe6f7);
+  position: relative;
 }
 
-input {
-  margin: 5px;
+.container {
+  padding: 20px;
+  background-color: #ffe6f7;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-family: 'Roboto', sans-serif;
+  color: #ff3366;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-box {
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ff66b2;
+  font-size: 1rem;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.input-box:focus {
+  border-color: #ff3366;
+  outline: none;
+}
+
+.button {
+  background-color: #ff3366;
+  color: white;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #e60057;
+  transform: scale(1.05);
+}
+
+.results {
+  margin-top: 20px;
+  background-color: #ffb3d9;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-family: 'Verdana', sans-serif;
+  color: #4d004d;
+}
+
+.results p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.watermark {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  transform: rotate(45deg);
+  pointer-events: none;
 }
 </style>
